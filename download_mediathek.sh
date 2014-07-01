@@ -31,7 +31,7 @@ MEDIAID=${BASH_ARGV[0]}
 ## Default Variables
 MEDIATHEK_URL="http://www.ardmediathek.de/play/media/"
 MEDIATHEK_POSTFIX="?devicetype=pc"
-QUALITY=3	## override with -n
+QUALITY=3	       ## override with -q
 FILENAME=''     ## override with -f
 ## 0 ... Low Quality
 ## 3 ... High Quality
@@ -49,7 +49,7 @@ while getopts ":q:f:h" opt; do
       FILENAME=$OPTARG
       ;;
     h)	## Help
-      echo "Usage: ./download_media.sh -q 0-3 MEDIA_ID"
+      echo "Usage: ./download_mediathek.sh -f filename.mp4 -q 0-3 MEDIA_ID"
 	  exit 1
       ;;	  	  
     \?)
@@ -68,10 +68,9 @@ done
 ##########################################
 
 JSON_URL="${MEDIATHEK_URL}${MEDIAID}${MEDIATHEK_POSTFIX}"
-echo 'JSON: '${JSON_URL}
-DOWNLOADURL=$(curl --silent $JSON_URL | jq -r '._mediaArray[1]._mediaStreamArray[3]._stream')
-#DOWNLOADURL=$(sed -e 's/\"/${DOWNLOADURL}/g')
-echo 'Download: ' ${DOWNLOADURL}
+#echo 'JSON: '${JSON_URL}
+DOWNLOADURL=$(curl --silent $JSON_URL | jq -r '._mediaArray[1]._mediaStreamArray['$QUALITY']._stream')
+#echo 'Downloading: ' ${DOWNLOADURL}
 
 ##########################################
 ## Download
