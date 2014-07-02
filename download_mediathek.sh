@@ -3,6 +3,7 @@
 # ------------------------------------------------------------------
 # [Author] Leo Gaggl
 #          http://www.gaggl.com
+#          
 #
 #          This script downloads a media file from 
 #          ARD Mediathek.
@@ -12,23 +13,12 @@
 #     http://stedolan.github.io/jq/
 #     UBUNTU: sudo apt-get install jq
 # ------------------------------------------------------------------
-          
-##########################################
-## Functions
-##########################################
-
-die () {
-    echo >&2 "$@"
-    exit 1
-}
 
 ##########################################
 ## Local Variables
 ##########################################
-[ "$#" > 0 ] || die "1 argument required, $# provided"
-MEDIAID=${BASH_ARGV[0]}
 
-## Default Variables
+MEDIA_URL=${BASH_ARGV[0]}
 MEDIATHEK_URL="http://www.ardmediathek.de/play/media/"
 MEDIATHEK_POSTFIX="?devicetype=pc"
 QUALITY=3	       ## override with -q
@@ -49,7 +39,7 @@ while getopts ":q:f:h" opt; do
       FILENAME=$OPTARG
       ;;
     h)	## Help
-      echo "Usage: ./download_mediathek.sh -f filename.mp4 -q 0-3 MEDIA_ID"
+      echo "Usage: ./download_mediathek.sh -f filename.mp4 -q 0-3 MEDIATHEK-URL"
 	  exit 1
       ;;	  	  
     \?)
@@ -64,13 +54,30 @@ while getopts ":q:f:h" opt; do
 done
 
 ##########################################
-## Get download URL from ID
+## Get download URL from Mediathek URL
 ##########################################
+if test -z "$MEDIA_URL" ; then
+  echo -e "Error: missing or invalid parameters\n\nUsage:\n $0 - for useage info use -h." >&2;
+  exit 1
+fi
+
+MEDIAID=$(echo "$MEDIA_URL" | sed -n 's/^.*documentId=\([^&]*\).*$/\1/p' | sed "s/%20/ /g")
+#echo 'MEDIAID: '${MEDIAID}
+
+if test -z "$MEDIAID" ; then
+  echo -e "No DocumentID found in URL." >&2;
+  exit 1
+fi
 
 JSON_URL="${MEDIATHEK_URL}${MEDIAID}${MEDIATHEK_POSTFIX}"
 #echo 'JSON: '${JSON_URL}
 DOWNLOADURL=$(curl --silent $JSON_URL | jq -r '._mediaArray[1]._mediaStreamArray['$QUALITY']._stream')
 #echo 'Downloading: ' ${DOWNLOADURL}
+
+if test -z "$DOWNLOADURL" ; then
+  echo -e "No downloadable media  found for this DocumentID." >&2;
+  exit 1
+fi
 
 ##########################################
 ## Download
