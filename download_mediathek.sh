@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # ------------------------------------------------------------------
-# [Author] Leo Gaggl
-#          http://www.gaggl.com
-#          
-#
-#          This script downloads a media file from 
-#          ARD Mediathek.
-#          http://github.com/leogaggl/download_media/
+# [Author]  Leo Gaggl
+#           http://www.gaggl.com
+#           ©2014 - SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. 
+#           License GPL V2 - details see attached LICENSE file
+
+#           This script downloads a media file from 
+#           ARD Mediathek.
+#           http://github.com/leogaggl/media/
 #
 # Dependency:
 #     http://stedolan.github.io/jq/
