@@ -72,7 +72,7 @@ fi
 
 JSON_URL="${MEDIATHEK_URL}${MEDIAID}${MEDIATHEK_POSTFIX}"
 #echo 'JSON: '${JSON_URL}
-DOWNLOADURL=$(curl --silent $JSON_URL | jq -r '._mediaArray[1]._mediaStreamArray['$QUALITY']._stream')
+DOWNLOADURL=$(curl --silent $JSON_URL | jq -c '._mediaArray[1]._mediaStreamArray[]' test.json | grep \"_quality\":$QUALITY | jq -r '._stream')
 #echo 'Downloading: ' ${DOWNLOADURL}
 
 if test -z "$DOWNLOADURL" ; then
